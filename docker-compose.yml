@@ -13,3 +13,9 @@ services:
       context: .
       dockerfile: src/FilpTube.VideoStorage/Dockerfile
 
+  db:
+    image: mongo
+    container_name: db
+    ports:
+        - 27017:27017
+    restart: always

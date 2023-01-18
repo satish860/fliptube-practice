@@ -6,6 +6,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - VIDEOSTORAGE=http://video-storage
+      - DBHOST=mongodb://db:27017
+      - DBNAME=video-streaming
     ports:
       - "80"
       - "443"

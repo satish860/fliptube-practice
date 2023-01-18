@@ -1,22 +1,35 @@
+using FilpTube.API;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using Yarp.ReverseProxy.Forwarder;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<IMongoClient, MongoClient>(s =>
+{
+    var uri = s.GetRequiredService<IConfiguration>()["DBHOST"];
+    return new MongoClient(uri);
+});
 builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddHttpClient();
 var app = builder.Build();
 
-app.MapGet("/video", async (HttpContext context, IHttpClientFactory httpClientFactory) =>
+app.MapGet("/video", async (HttpContext context, IHttpClientFactory httpClientFactory,IMongoClient mongoClient) =>
 {
+    var DBName = builder.Configuration["DBNAME"];
+    var database = mongoClient.GetDatabase(DBName);
+    var collection = database.GetCollection<Video>("videos");
+    var video = collection.Find(document=>document.Id==ObjectId.Parse("63c8068fabe932f864eff5f2")).FirstOrDefault();
+
     var httpClient = httpClientFactory.CreateClient();
     var baseUrl = builder.Configuration["VIDEOSTORAGE"];
     httpClient.BaseAddress = new Uri(baseUrl);
     var responseMessage = await httpClient.GetAsync(
-        "/video?videoname=SampleVideo_1280x720_1mb.mp4"
+        $"/video?videoname={video.Path}"
         ,HttpCompletionOption.ResponseHeadersRead
         ,context.RequestAborted);
     context.Response.StatusCode = (int)responseMessage.StatusCode;
