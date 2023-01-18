@@ -1,6 +1,7 @@
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using Amazon.S3;
+using Microsoft.AspNetCore.Mvc;
 using System.IO;
 
 namespace FilpTube.VideoStorage
@@ -10,21 +11,21 @@ namespace FilpTube.VideoStorage
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            // builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
             var app = builder.Build();
 
-            app.MapGet("/video", async (IConfiguration configuration) =>
+            app.MapGet("/video", async ([FromQuery]string videoName,IConfiguration configuration) =>
             {
                 var Config = new AmazonS3Config
                 {
-                    ServiceURL = "https://sgp1.digitaloceanspaces.com",
+                    ServiceURL = configuration["DOCTL:ServiceURL"],
                     ForcePathStyle= false,
                 };
                 var awsAccessKey = configuration["AWS_ACCESS_KEY"];
                 var awsSecret = configuration["AWS_SECRET"];
                 var cred = new BasicAWSCredentials(awsAccessKey, awsSecret);
                 AmazonS3Client amazonS3Client = new AmazonS3Client(cred,Config);
-                var response = await amazonS3Client.GetObjectAsync("bmdk", "SampleVideo_1280x720_1mb.mp4");
+                var bucketName = configuration["DOCTL:BucketName"];
+                var response = await amazonS3Client.GetObjectAsync(bucketName, videoName);
                 return Results.File(response.ResponseStream, contentType: "video/mp4", enableRangeProcessing: true);
             });
 
