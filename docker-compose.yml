@@ -1,14 +1,14 @@
 version: '3.4'
 
 services:
-  filptube.api:
-    image: ${DOCKER_REGISTRY-}video-streaming
+  video-streaming:
+    image: video-streaming
     build:
       context: .
       dockerfile: src/FilpTube.API/Dockerfile
 
-  filptube.videostorage:
-    image: ${DOCKER_REGISTRY-}filptubevideostorage
+  video-storage:
+    image: video-storage
     build:
       context: .
       dockerfile: src/FilpTube.VideoStorage/Dockerfile

@@ -6,14 +6,17 @@ using System.Net.Http;
 using Yarp.ReverseProxy.Forwarder;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddHttpClient();
 var app = builder.Build();
 
 app.MapGet("/video", async (HttpContext context, IHttpClientFactory httpClientFactory) =>
 {
     var httpClient = httpClientFactory.CreateClient();
+    var baseUrl = builder.Configuration["VIDEOSTORAGE"];
+    httpClient.BaseAddress = new Uri(baseUrl);
     var responseMessage = await httpClient.GetAsync(
-        "https://localhost:7023/video?videoname=SampleVideo_1280x720_1mb.mp4"
+        "/video?videoname=SampleVideo_1280x720_1mb.mp4"
         ,HttpCompletionOption.ResponseHeadersRead
         ,context.RequestAborted);
     context.Response.StatusCode = (int)responseMessage.StatusCode;
