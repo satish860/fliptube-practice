@@ -1,5 +1,6 @@
 using FilpTube.API;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -18,12 +19,12 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddHttpClient();
 var app = builder.Build();
 
-app.MapGet("/video", async (HttpContext context, IHttpClientFactory httpClientFactory,IMongoClient mongoClient) =>
+app.MapGet("/video", async ([FromQuery] string videoid,HttpContext context, IHttpClientFactory httpClientFactory,IMongoClient mongoClient) =>
 {
     var DBName = builder.Configuration["DBNAME"];
     var database = mongoClient.GetDatabase(DBName);
     var collection = database.GetCollection<Video>("videos");
-    var video = collection.Find(document=>document.Id==ObjectId.Parse("63c8068fabe932f864eff5f2")).FirstOrDefault();
+    var video = collection.Find(document=>document.Id==ObjectId.Parse(videoid)).FirstOrDefault();
 
     var httpClient = httpClientFactory.CreateClient();
     var baseUrl = builder.Configuration["VIDEOSTORAGE"];
