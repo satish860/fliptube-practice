@@ -1,3 +1,4 @@
+using AlterNats;
 using FilpTube.API;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,17 +16,25 @@ builder.Services.AddSingleton<IMongoClient, MongoClient>(s =>
     var uri = s.GetRequiredService<IConfiguration>()["DBHOST"];
     return new MongoClient(uri);
 });
+var natsHostName = builder.Configuration["NATSHOST"];
+builder.Services.AddNats(poolSize: 4, 
+    configureOptions: opt => 
+    opt with { Url = $"Nats:4222"});
 builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddHttpClient();
 var app = builder.Build();
 
-app.MapGet("/video", async ([FromQuery] string videoid,HttpContext context, IHttpClientFactory httpClientFactory,IMongoClient mongoClient) =>
+app.MapGet("/video", async ([FromQuery] string videoid,HttpContext context, 
+    IHttpClientFactory httpClientFactory,
+    IMongoClient mongoClient,
+    INatsCommand natsCommand) =>
 {
     var DBName = builder.Configuration["DBNAME"];
     var database = mongoClient.GetDatabase(DBName);
     var collection = database.GetCollection<Video>("videos");
-    var video = collection.Find(document=>document.Id==ObjectId.Parse(videoid)).FirstOrDefault();
-
+    var video = collection.Find(document => document.Id == ObjectId.Parse(videoid)).FirstOrDefault();
+   
+    await natsCommand.PublishAsync<string>("viewed", video.Path);
     var httpClient = httpClientFactory.CreateClient();
     var baseUrl = builder.Configuration["VIDEOSTORAGE"];
     httpClient.BaseAddress = new Uri(baseUrl);

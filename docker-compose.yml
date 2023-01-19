@@ -19,3 +19,17 @@ services:
     ports:
         - 27017:27017
     restart: always
+  
+  Nats:
+    image: nats
+    container_name: nats
+    ports:
+        - 4222:4222
+    restart: always
+
+  video-history:
+    image: video-history
+    build:
+      context: .
+      dockerfile: src/FilpTube.History/Dockerfile
+

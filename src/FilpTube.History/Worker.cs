@@ -1,21 +1,24 @@
+using AlterNats;
+
 namespace FilpTube.History
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
+        private readonly INatsCommand natsCommand;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(ILogger<Worker> logger, INatsCommand natsCommand)
         {
             _logger = logger;
+            this.natsCommand = natsCommand;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            await this.natsCommand.SubscribeAsync<string>("viewed", (path) =>
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
-            }
+                Console.WriteLine(path);
+            });
         }
     }
 }
