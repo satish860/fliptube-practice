@@ -4,21 +4,21 @@ metadata:
   name: video-storage
   namespace: default
   labels:
-    app: video-storage
+    app: filp-tube
 spec:
   selector:
     matchLabels:
-      app: video-storage
+      app: filp-tube
       component: video-storage
   replicas: 1
   template:
     metadata:
       labels:
-        app: video-storage
+        app: filp-tube
         component: video-storage
     spec:
       containers:
-        - name: video-storage
+        - name: filp-tube
           image: video-storage:1
           env:
             - name: ASPNETCORE_URLS

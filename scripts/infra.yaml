@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  nats
+  namespace: default
+  labels:
+    app:  filp-tube
+    component: nats
+spec:
+  selector:
+    matchLabels:
+      app: filp-tube
+      component: nats
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  filp-tube
+        component: nats
+    spec:
+      containers:
+      - name:  filp-tube
+        image:  nats
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort:  4222
+          name:  nats
+      restartPolicy: Always
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  mongo
+  namespace: default
+  labels:
+    app:  filp-tube
+    component: mongodb
+spec:
+  selector:
+    matchLabels:
+      app: filp-tube
+      component: mongodb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  filp-tube
+        component: mongodb
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  mongo
+        image:  mongo
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort:  27017
+          name:  mongo
+      restartPolicy: Always
