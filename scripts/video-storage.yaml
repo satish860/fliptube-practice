@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-storage
+  namespace: default
+  labels:
+    app: video-storage
+spec:
+  selector:
+    matchLabels:
+      app: video-storage
+      component: video-storage
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: video-storage
+        component: video-storage
+    spec:
+      containers:
+        - name: video-storage
+          image: video-storage:1
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:80
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: digitalocean
+                  key: AccessKey
+            - name: AWS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: AccessSecret
+                  name: digitalocean
+          resources:
+            requests:
+              cpu: 200m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 100Mi
+          ports:
+            - containerPort: 80
+              name: video-storage
+      restartPolicy: Always
+
