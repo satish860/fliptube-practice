@@ -19,10 +19,14 @@ spec:
     spec:
       containers:
         - name: filp-tube
-          image: video-storage:1
+          image: video-storage:2
           env:
             - name: ASPNETCORE_URLS
               value: http://+:80
+            - name: DOCTL__ServiceURL
+              value: https://sgp1.digitaloceanspaces.com
+            - name: DOCTL__BucketName
+              value: bmdk
             - name: AWS_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
