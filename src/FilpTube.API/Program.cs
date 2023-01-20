@@ -15,6 +15,7 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddSingleton<IMongoClient, MongoClient>(s =>
 {
     var uri = s.GetRequiredService<IConfiguration>()["DBHOST"];
+    Console.WriteLine(uri);
     return new MongoClient(uri);
 });
 var natsHostName = builder.Configuration["NATSHOST"];
@@ -42,17 +43,8 @@ app.MapGet("/video", async ([FromQuery] string videoid,HttpContext context,
         $"/video/{video.Path}"
         ,HttpCompletionOption.ResponseHeadersRead
         ,context.RequestAborted);
-    context.Response.StatusCode = (int)responseMessage.StatusCode;
-    foreach (var header in responseMessage.Headers)
-    {
-        context.Response.Headers[header.Key] = header.Value.ToArray();
-    }
-
-    foreach (var header in responseMessage.Content.Headers)
-    {
-        context.Response.Headers[header.Key] = header.Value.ToArray();
-    }
-    await responseMessage.Content.CopyToAsync(context.Response.Body);
+    var fileStream = await responseMessage.Content.ReadAsStreamAsync();
+    return Results.File(fileStream, responseMessage.Content.Headers?.ContentType?.MediaType,enableRangeProcessing: true);
 });
 
 app.MapGet("/", () => "Hello World!");

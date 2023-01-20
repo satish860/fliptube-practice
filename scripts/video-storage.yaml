@@ -48,4 +48,25 @@ spec:
             - containerPort: 80
               name: video-storage
       restartPolicy: Always
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: video-storage
+  namespace: default
+  labels:
+    app: filp-tube
+    component: video-storage
+spec:
+  selector:
+    component: video-storage
+  type: ClusterIP
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  ports:
+  - name: video-storage
+    protocol: TCP
+    port: 80
+    targetPort: video-storage

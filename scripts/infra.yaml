@@ -32,6 +32,23 @@ spec:
         - containerPort:  4222
           name:  nats
       restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats
+  namespace: default
+  labels:
+    app:  filp-tube
+    component: nats
+spec:
+  selector:
+    component: nats
+  type: ClusterIP
+  ports:
+  - name: nats
+    port: 4222
+    targetPort: nats
 
 ---
 apiVersion: apps/v1
@@ -72,3 +89,23 @@ spec:
         - containerPort:  27017
           name:  mongo
       restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: default
+  labels:
+    app:  filp-tube
+    component: mongodb
+spec:
+  selector:
+    app:  filp-tube
+    component: mongodb
+  type: ClusterIP
+  ports:
+  - name: mongo
+    port: 27017
+    targetPort: mongo
+---
