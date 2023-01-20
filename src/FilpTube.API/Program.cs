@@ -11,6 +11,7 @@ using System.Net.Http;
 using Yarp.ReverseProxy.Forwarder;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddSingleton<IMongoClient, MongoClient>(s =>
 {
     var uri = s.GetRequiredService<IConfiguration>()["DBHOST"];
@@ -19,8 +20,7 @@ builder.Services.AddSingleton<IMongoClient, MongoClient>(s =>
 var natsHostName = builder.Configuration["NATSHOST"];
 builder.Services.AddNats(poolSize: 4, 
     configureOptions: opt => 
-    opt with { Url = $"Nats:4222"});
-builder.Configuration.AddEnvironmentVariables();
+    opt with { Url = $"{natsHostName}:4222"});
 builder.Services.AddHttpClient();
 var app = builder.Build();
 
@@ -39,7 +39,7 @@ app.MapGet("/video", async ([FromQuery] string videoid,HttpContext context,
     var baseUrl = builder.Configuration["VIDEOSTORAGE"];
     httpClient.BaseAddress = new Uri(baseUrl);
     var responseMessage = await httpClient.GetAsync(
-        $"/video?videoname={video.Path}"
+        $"/video/{video.Path}"
         ,HttpCompletionOption.ResponseHeadersRead
         ,context.RequestAborted);
     context.Response.StatusCode = (int)responseMessage.StatusCode;

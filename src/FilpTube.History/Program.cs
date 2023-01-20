@@ -13,7 +13,7 @@ namespace FilpTube.History
                 c.AddEnvironmentVariables();
             });
 
-            host.ConfigureServices(services =>
+            host.ConfigureServices((hostContext, services) =>
             {
 
                 services.AddSingleton<IMongoClient, MongoClient>(s =>
@@ -21,7 +21,7 @@ namespace FilpTube.History
                     var uri = s.GetRequiredService<IConfiguration>()["DBHOST"];
                     return new MongoClient(uri);
                 });
-                var natsHostName = "Nats";
+                var natsHostName = hostContext.Configuration["NATSHOST"];
                 services.AddNats(poolSize: 4,
                                  configureOptions: opt =>
                                  opt with { Url = $"{natsHostName}:4222",

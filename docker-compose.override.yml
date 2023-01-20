@@ -8,7 +8,7 @@ services:
       - VIDEOSTORAGE=http://video-storage
       - DBHOST=mongodb://db:27017
       - DBNAME=video-streaming
-      - NATSHOST = Nats
+      - NATSHOST=Nats
     ports:
       - "80"
       - "443"
@@ -32,5 +32,6 @@ services:
       - DOTNET_ENVIRONMENT=Development
       - DBHOST=mongodb://db:27017
       - DBNAME=video-streaming
+      - NATSHOST=Nats
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
