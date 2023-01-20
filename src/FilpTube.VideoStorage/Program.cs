@@ -13,7 +13,7 @@ namespace FilpTube.VideoStorage
             var builder = WebApplication.CreateBuilder(args);
             var app = builder.Build();
 
-            app.MapGet("/video", async ([FromQuery]string videoName,IConfiguration configuration) =>
+            app.MapGet("/video/{videoName}", async (string videoName,IConfiguration configuration) =>
             {
                 var Config = new AmazonS3Config
                 {

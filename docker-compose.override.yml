@@ -17,8 +17,10 @@ services:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
   video-storage:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - DOCTL__ServiceURL=https://sgp1.digitaloceanspaces.com
+      - DOCTL__BucketName=bmdk
     ports:
       - "80"
     volumes:
