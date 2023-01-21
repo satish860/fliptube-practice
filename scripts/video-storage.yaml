@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: filp-tube
-          image: video-storage:2
+          image: satish860/video-storage:2
           env:
             - name: ASPNETCORE_URLS
               value: http://+:80

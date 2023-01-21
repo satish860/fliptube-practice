@@ -24,7 +24,7 @@ spec:
       # - Each init container must complete successfully before the next one starts.
       containers:
         - name: video-streaming
-          image: video-streaming:5
+          image: registry.digitalocean.com/bmdk/video-streaming:5
           resources:
             requests:
               cpu: 100m

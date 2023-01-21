@@ -24,7 +24,7 @@ spec:
       # - Each init container must complete successfully before the next one starts.
       containers:
         - name: video-history
-          image: video-history:1
+          image: satish860/video-history:1
           resources:
             requests:
               cpu: 100m
